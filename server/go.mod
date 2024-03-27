@@ -1,4 +1,4 @@
-module test_api
+module nvrplayer
 
 go 1.20
 
