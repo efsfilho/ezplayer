@@ -21,4 +21,7 @@
 go.work
 
 teste.txt
-*.yaml
+# *.yaml
+package.json
+rec/*
+web/*

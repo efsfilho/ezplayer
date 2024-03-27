@@ -1,0 +1,4 @@
+server:
+    port: 4000
+eznvr:
+    storage: /path/to/eznvr/storage
