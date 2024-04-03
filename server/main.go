@@ -41,13 +41,36 @@ func main() {
 
 	// Routes
 	e.Static("/", "web")
-	e.Static("/recordings", EZNVR_STORAGE)
+	e.GET("/recordings/:file", getRecordings)
 	e.GET("/list-cams", listCams)
 	e.GET("/list-videos/:cam", listVideos)
 
 	// Start server
 	e.HideBanner = true
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", SERVER_PORT)))
+}
+
+func getRecordings(c echo.Context) error {
+	file := c.Param("file")
+	filePath := path.Join(EZNVR_STORAGE, file)
+
+	// // TODO make a better different file restriction?
+	if !strings.HasSuffix(filePath, ".mkv") && !strings.HasSuffix(filePath, ".mp4") {
+		return echo.NewHTTPError(http.StatusNotFound, "File not found")
+	}
+
+	if _, err := os.Stat(filePath); err != nil {
+		if os.IsNotExist(err) {
+			return echo.NewHTTPError(http.StatusNotFound, "File not found")
+		} else {
+			log.Fatal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+	}
+
+	c.Response().Header().Set(echo.HeaderContentType, "video/mp4")
+
+	return c.File(filePath)
 }
 
 func listCams(c echo.Context) error {
@@ -83,14 +106,14 @@ func listFiles(vid Video) []Video {
 			videos = append(videos, listFiles(video)...)
 		} else {
 			// TODO make a different restriction to match other files than mkv files
-			if strings.HasSuffix(filePath, ".mkv") {
+			if strings.HasSuffix(filePath, ".mkv") || strings.HasSuffix(filePath, ".mp4") {
 				lastModification := time.Now()
 				info, e := file.Info()
 				if e == nil {
 					lastModification = info.ModTime()
 				}
 				location := strings.Replace(filePath, "..", "", 1)
-				location = strings.Replace(location, EZNVR_STORAGE, "", 1)
+				location = strings.Replace(location, EZNVR_STORAGE+"/", "", 1)
 				video := Video{
 					path.Base(filePath),
 					location,

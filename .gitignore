@@ -25,3 +25,4 @@ teste.txt
 package.json
 rec/*
 web/*
+*.sh
