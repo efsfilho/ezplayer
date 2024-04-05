@@ -22,7 +22,10 @@ go.work
 
 teste.txt
 *.yaml
-package.json
+/package.json
 rec/*
-web/*
+# web/*
+web/dist
+web/node_modules
+web/.env
 *.sh
