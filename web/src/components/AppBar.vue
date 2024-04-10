@@ -13,7 +13,7 @@
     <template v-slot:prepend>
       <v-app-bar-nav-icon @click="emit('rail')"></v-app-bar-nav-icon>
     </template>
-    <v-app-bar-title>Title</v-app-bar-title>
+    <v-app-bar-title>NVR Player</v-app-bar-title>
     <v-spacer></v-spacer>
     <v-btn icon><v-icon>mdi-magnify</v-icon></v-btn>
     <v-btn icon><v-icon>mdi-dots-vertical</v-icon></v-btn>

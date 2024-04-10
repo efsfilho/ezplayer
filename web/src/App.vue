@@ -24,13 +24,23 @@
 </template>
 
 <script >
+  import { useDisplay } from 'vuetify/lib/framework.mjs';
+
   export default {
     data: () => ({
       rail: false,
       cameras: [],
       videos: [],
-      serverAdress: 'http://localhost:4000'
+      serverPort: __API_PORT__,
+      serverHost: __API_HOST__,
+      serverAdress: ''
     }),
+    setup(){
+      const { name } = useDisplay()
+      return {
+        name
+      }
+    },
     // computed: {
     //   listWidth() {
     //     switch (this.name) {
@@ -51,8 +61,17 @@
     //     }
     //   },
     // },
+    async mounted() {
+      if (__API_HOST__ && __API_PORT__) {
+        this.serverAdress = `http://${__API_HOST__}:${__API_PORT__}`;
+      }
+
+      this.loadCams();
+      // this.loadVideos();
+    },
     methods: {
       async loadCams() {
+        this.cameras = [];
         fetch(`${this.serverAdress}/list-cams`).then(res => {
           if (!res.ok) {
             throw new Error(`HTTP error! Status: ${res.status}`);
