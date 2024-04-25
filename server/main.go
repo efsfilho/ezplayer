@@ -46,7 +46,6 @@ func main() {
 	e.GET("/list-videos/:cam", listVideos)
 
 	// Start server
-	e.HideBanner = true
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", SERVER_PORT)))
 }
 
@@ -80,11 +79,8 @@ func listCams(c echo.Context) error {
 		log.Fatal(err)
 	}
 	for _, file := range files {
-		// TODO remove filter
-		if strings.HasPrefix(file.Name(), "portao") {
-			cams = append(cams, file.Name())
-			fmt.Println(file.Name(), file.IsDir())
-		}
+		// TODO add folder filter
+		cams = append(cams, file.Name())
 	}
 	return c.JSON(http.StatusOK, cams)
 }
