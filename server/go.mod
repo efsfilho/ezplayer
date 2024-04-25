@@ -1,4 +1,4 @@
-module nvrplayer
+module ez-player
 
 go 1.20
 
