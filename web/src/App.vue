@@ -9,6 +9,7 @@
     />
 
     <AppBar
+      title="EZ-NVR Player"
       @rail="rail = !rail"
     />
 
