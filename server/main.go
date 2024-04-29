@@ -79,8 +79,10 @@ func listCams(c echo.Context) error {
 		log.Fatal(err)
 	}
 	for _, file := range files {
-		// TODO add folder filter
-		cams = append(cams, file.Name())
+		if file.IsDir() {
+			cams = append(cams, file.Name())
+		}
+
 	}
 	return c.JSON(http.StatusOK, cams)
 }
