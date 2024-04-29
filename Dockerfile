@@ -1,34 +1,31 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:alpine3.18
+FROM golang:alpine3.19 AS builder
 
-RUN mkdir -p /opt/nvrplayer
-WORKDIR /nvrplayer
+RUN apk update && apk upgrade
+RUN apk add --no-cache nodejs=20.12.1-r0 npm=10.2.5-r0
 
-RUN apk update
-RUN apk add --no-cache nodejs=18.20.1-r0 npm=9.6.6-r0
+COPY . /tmp
 
-COPY . ./tmp
+# creates /tmp/web/dist
+WORKDIR /tmp/web
+RUN npm install && npm run build
 
-# Web build
-RUN cd tmp/web \
- && npm install \
- && npm run build
-RUN mv tmp/web/dist web
+WORKDIR /tmp/server
+RUN go mod download 
+RUN go build -o ./ez-player
 
-# Server Build
-RUN cd tmp/server && go mod download
-# # # export GO111MODULE=on
-RUN cd tmp/server && CGO_ENABLED=0 GOOS=linux go build -o ./nvrplayer
-RUN mv tmp/server/nvrplayer ./
 
-RUN rm -r tmp
+FROM busybox
+WORKDIR /app
+COPY --from=builder /tmp/server/ez-player .
+COPY --from=builder /tmp/web/dist ./web
 
-ENV SERVER_PORT=4000
+ENV SERVER_PORT=4000 \
+    EZNVR_STORAGE=/storage
+
 EXPOSE $SERVER_PORT
 
-ENV EZNVR_STORAGE=/storage
 VOLUME ["${EZNVR_STORAGE}"]
 
-CMD ["./nvrplayer"]
-
+ENTRYPOINT /app/ez-player

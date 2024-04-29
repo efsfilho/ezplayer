@@ -34,7 +34,7 @@ func main() {
 		Format: "[${time_rfc3339_nano}] - ${remote_ip} \"${method} ${uri} ${protocol}\" ${status} ${bytes_out} - ${user_agent} \n",
 	}))
 	e.Use(middleware.Recover())
-	// e.Use(middleware.CORSWithConfig(middleware.DefaultCORSConfig))
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", "http://10.0.0.11:3000"},
 	}))
@@ -53,7 +53,7 @@ func getRecordings(c echo.Context) error {
 	file := c.Param("file")
 	filePath := path.Join(EZNVR_STORAGE, file)
 
-	// // TODO make a better different file restriction?
+	// // TODO make a better/different file restriction?
 	if !strings.HasSuffix(filePath, ".mkv") && !strings.HasSuffix(filePath, ".mp4") {
 		return echo.NewHTTPError(http.StatusNotFound, "File not found")
 	}
